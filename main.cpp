@@ -7,60 +7,58 @@ using namespace std;
 
 struct problem
 {
-    std::string id;
-    std::string speciality;
+    string id;
+    string speciality;
+    int durata;
 };
 
 struct doctor
 {
-    std::string id;
-    std::string speciality;
+    string id;
+    string speciality;
+    int timp_ramas = 8;
+    vector<string> nr_probleme_rezolvate;
 };
 
 int main()
 {
 
-    ifstream inFile("input.txt");
+    ifstream inFile("input4_bonus.txt");
 
     int no_problems, no_doctors;
 
     inFile >> no_problems;
+    vector <problem> problems(no_problems);
 
-    std::vector <problem> problems(no_problems);
-    for (int i = 0; i < no_problems; i++)
-    {
-        inFile >> problems[i].id;
-        inFile >> problems[i].speciality;
-
+    for (auto it = problems.begin(); it != problems.end(); ++it) {
+        inFile >> it->id >> it->speciality >> it->durata;
     }
 
     inFile >> no_doctors;
-    std::vector <doctor>  doctors(no_doctors);
-    for (int i = 0; i < no_doctors; i++)
-    {
-        doctor doc;
-
-        inFile >> doc.id;
-        inFile >> doc.speciality;
-
-        doctors.push_back(doc);
+    vector <doctor>  doctors(no_doctors);
+    for (auto it = doctors.begin(); it != doctors.end(); ++it) {
+        inFile >> it->id >> it->speciality;
     }
 
-    for (auto problem : problems) {
+    for (auto prob_it = problems.begin(); prob_it != problems.end(); ++prob_it) {
         bool accepted = false;
-        for (auto doctor : doctors) {
-            if (problem.speciality == doctor.speciality) {
+        for (auto doc_it = doctors.begin(); doc_it != doctors.end(); ++doc_it) {
+            if (prob_it->speciality == doc_it->speciality && doc_it->timp_ramas >= prob_it->durata) {
+                doc_it->timp_ramas -= prob_it->durata;
+                doc_it->nr_probleme_rezolvate.push_back(prob_it->id);
                 accepted = true;
                 break;
             }
-        }
-        if (accepted) {
-            std::cout << problem.id << " Acceptat" << std::endl;
-        }
-        else {
-            std::cout << problem.id << " Respins" << std::endl;
-        }
 
+        }
+    }
+
+    for (auto it = doctors.begin(); it != doctors.end(); ++it) {
+        cout << it->id << " " << it->nr_probleme_rezolvate.size() << " ";
+        for (auto prob_it = it->nr_probleme_rezolvate.begin(); prob_it != it->nr_probleme_rezolvate.end(); ++prob_it) {
+            cout << *prob_it << " ";
+        }
+        cout << endl;
     }
     return 0;
 }
